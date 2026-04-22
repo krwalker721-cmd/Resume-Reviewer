@@ -63,7 +63,7 @@ export default function ReviewHistory({ userId, onSelectReview }) {
                 <button
                   key={r.id}
                   onClick={() => onSelectReview(r.feedback)}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 0', borderBottom: i < reviews.length - 1 ? '1px solid var(--border)' : 'none', background: 'none', border: 'none', borderBottom: i < reviews.length - 1 ? '1px solid var(--border)' : 'none', textAlign: 'left', cursor: 'pointer', width: '100%' }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 0', background: 'none', border: 'none', borderBottom: i < reviews.length - 1 ? '1px solid var(--border)' : 'none', textAlign: 'left', cursor: 'pointer', width: '100%' }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                     <span style={{ fontSize: '14px', fontWeight: '500', color: 'var(--heading)' }}>
