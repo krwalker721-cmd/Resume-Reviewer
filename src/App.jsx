@@ -67,7 +67,7 @@ function MainApp({ user }) {
 
   async function handleReview({ resumeText, appType }) {
     // Check access
-    if (profile?.access_level === 'free' && (profile?.reviews_used ?? 0) >= 3) {
+    if (profile?.access_level === 'free' && (profile?.reviews_used ?? 0) >= 1) {
       setShowPaywall(true)
       return
     }
@@ -83,7 +83,10 @@ function MainApp({ user }) {
       })
 
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Review failed. Please try again.')
+      if (!res.ok) {
+        if (data.paywall) { setShowPaywall(true); setView('form'); return }
+        throw new Error(data.error || 'Review failed. Please try again.')
+      }
 
       setResult(data)
       setView('results')
