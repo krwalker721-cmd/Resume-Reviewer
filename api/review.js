@@ -126,6 +126,6 @@ Return ONLY the JSON object. No markdown fences, no extra text.`
     return res.status(200).json(feedback)
   } catch (err) {
     console.error('Review error:', err)
-    return res.status(500).json({ error: 'AI review failed. Please try again in a moment.' })
+    return res.status(500).json({ error: err?.message || err?.toString() || 'AI review failed' })
   }
 }
