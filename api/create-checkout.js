@@ -18,6 +18,9 @@ export default async function handler(req, res) {
 
   const appUrl = process.env.VITE_APP_URL || 'http://localhost:5173'
 
+  console.log('Key prefix:', process.env.STRIPE_SECRET_KEY?.slice(0, 12))
+  console.log('Price ID:', priceId)
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: isMonthly ? 'subscription' : 'payment',
