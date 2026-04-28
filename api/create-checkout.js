@@ -8,9 +8,9 @@ export default async function handler(req, res) {
   }
 
   const isMonthly = plan === 'monthly'
-  const priceId = isMonthly
+  const priceId = (isMonthly
     ? process.env.STRIPE_MONTHLY_PRICE_ID
-    : process.env.STRIPE_LIFETIME_PRICE_ID
+    : process.env.STRIPE_LIFETIME_PRICE_ID)?.trim()
 
   const appUrl = process.env.VITE_APP_URL || 'https://resume-reviewer-gqxq.vercel.app'
 
