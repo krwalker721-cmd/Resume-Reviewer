@@ -1,7 +1,3 @@
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
@@ -16,25 +12,40 @@ export default async function handler(req, res) {
     ? process.env.STRIPE_MONTHLY_PRICE_ID
     : process.env.STRIPE_LIFETIME_PRICE_ID
 
-  const appUrl = process.env.VITE_APP_URL || 'http://localhost:5173'
+  const appUrl = process.env.VITE_APP_URL || 'https://resume-reviewer-gqxq.vercel.app'
 
-  console.log('Key prefix:', process.env.STRIPE_SECRET_KEY?.slice(0, 12))
-  console.log('Price ID:', priceId)
+  const params = new URLSearchParams({
+    mode: isMonthly ? 'subscription' : 'payment',
+    'payment_method_types[0]': 'card',
+    'line_items[0][price]': priceId,
+    'line_items[0][quantity]': '1',
+    success_url: `${appUrl}/success`,
+    cancel_url: appUrl,
+    'metadata[userId]': userId,
+  })
+
+  if (email) params.append('customer_email', email)
 
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: isMonthly ? 'subscription' : 'payment',
-      payment_method_types: ['card'],
-      line_items: [{ price: priceId, quantity: 1 }],
-      customer_email: email,
-      success_url: `${appUrl}/success`,
-      cancel_url: appUrl,
-      metadata: { userId },
+    const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
     })
 
-    return res.status(200).json({ url: session.url })
+    const data = await response.json()
+
+    if (!response.ok) {
+      console.error('Stripe error:', data)
+      return res.status(500).json({ error: data?.error?.message || 'Stripe error' })
+    }
+
+    return res.status(200).json({ url: data.url })
   } catch (err) {
-    console.error('Checkout error:', err)
+    console.error('Checkout fetch error:', err)
     return res.status(500).json({ error: err.message })
   }
 }
